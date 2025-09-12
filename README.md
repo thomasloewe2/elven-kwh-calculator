@@ -24,7 +24,7 @@
 
 ---
 
-## 🚀 How to Use
+## 🛠️ How to Use
 
 1.  **Install and activate** the plugin in WordPress.
 2.  **Add the shortcode** `[elven_kwh_calc]` to the content of any page or post.
