@@ -3,7 +3,7 @@
  * Plugin Name: Elven kWh calculator
  * Description: Universal kWh-beregner med shortcode [elven_kwh_calc]. Ingen data gemmes. Understøtter flere instanser pr. side.
  * Version: 1.0.0
- * Author: Elven.dk
+ * Author: Thomas Løwe Hansen
  * License: GPL-2.0-or-later
  * Text Domain: elven-kwh-calculator
  */
