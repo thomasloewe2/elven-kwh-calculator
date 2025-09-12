@@ -73,7 +73,7 @@
               </div>
             </div>
 
-            <label class="elven-kwh-field elven-field-per-use">
+            <label class="elven-kwh-field elven-field-per-use elven-field-duration">
               <span>Varighed pr. gang (minutter)</span>
               <input type="text" inputmode="decimal" class="elven-duration-min" placeholder="fx 90" aria-label="Varighed pr. gang (minutter)">
             </label>
@@ -88,9 +88,9 @@
               <input type="text" inputmode="decimal" class="elven-hours-per-week" placeholder="fx 10" aria-label="Timer pr. uge">
             </label>
 
-            <label class="elven-kwh-field">
+            <label class="elven-kwh-field elven-watt-label">
               <span>Apparatets effekt (Watt)</span>
-              <input type="text" inputmode="decimal" class="elven-watt" placeholder="fx 2000" aria-label="Effekt i Watt">
+              <input type="text" inputmode="decimal" class="elven-watt" placeholder="fx 2000" aria-label="Effekt eller forbrug">
             </label>
 
             <label class="elven-kwh-field">
@@ -134,6 +134,8 @@
       this.modeRadios  = wrapper.querySelectorAll('.elven-mode-switch input[type="radio"]');
       this.fPerUse   = wrapper.querySelectorAll('.elven-field-per-use');
       this.fPerHour  = wrapper.querySelector('.elven-field-per-hour');
+      this.fieldDuration = wrapper.querySelector('.elven-field-duration');
+      this.labelWatt = wrapper.querySelector('.elven-watt-label span');
 
       this.inDurationMin   = wrapper.querySelector('.elven-duration-min');
       this.inUsesPerWeek   = wrapper.querySelector('.elven-uses-per-week');
@@ -160,7 +162,7 @@
 
       // Helpful initial values if nothing set
       if (!this.inPrice.value) this.inPrice.value = '2,50';
-      if (!this.inWatt.value)  this.inWatt.value  = '2000';
+      if (!this.inWatt.value)  this.inWatt.value  = '1000'; // Changed default to reflect Wh
       this.inDurationMin.value = '90';
       this.inUsesPerWeek.value = '5';
       this.inHoursPerWeek.value = '10';
@@ -176,39 +178,44 @@
 
     update(){
       const mode = this.root.querySelector('.elven-mode-switch input:checked').value;
+      const isPerUseMode = mode === 'per_use';
 
       // Toggle visibility
-      this.fPerUse.forEach(el => el.classList.toggle('elven-hidden', mode !== 'per_use'));
-      this.fPerHour.classList.toggle('elven-hidden', mode !== 'per_hour');
-
-      // Read inputs
-      const W     = parseLocaleNumber(this.inWatt.value);
-      const price = parseLocaleNumber(this.inPrice.value);
-
-      let unitHours, weekHours;
-      if (mode === 'per_use'){
-        const minutes = parseLocaleNumber(this.inDurationMin.value);
-        const usesW   = parseLocaleNumber(this.inUsesPerWeek.value);
-        unitHours = (minutes / 60);
-        weekHours = unitHours * usesW;
+      this.fPerUse.forEach(el => el.classList.toggle('elven-hidden', !isPerUseMode));
+      this.fPerHour.classList.toggle('elven-hidden', isPerUseMode);
+      
+      // Handle special visibility and labels for "per use" mode
+      if (isPerUseMode) {
+        this.fieldDuration.classList.add('elven-hidden');
+        this.labelWatt.textContent = 'Apparatets forbrug (Wh pr. gang)';
       } else {
-        const hoursW = parseLocaleNumber(this.inHoursPerWeek.value);
-        unitHours = 1;
-        weekHours = hoursW;
+        this.labelWatt.textContent = 'Apparatets effekt (Watt)';
       }
 
-      const unitKwh  = (W * unitHours) / 1000;
+      // Read inputs
+      const W     = parseLocaleNumber(this.inWatt.value); // Can be Watt or Wh
+      const price = parseLocaleNumber(this.inPrice.value);
+
+      let unitKwh, weekKwh;
+
+      if (isPerUseMode){
+        const usesW   = parseLocaleNumber(this.inUsesPerWeek.value);
+        const whPerUse = W; // Input is now treated as Watt-hours
+        unitKwh = whPerUse / 1000;
+        weekKwh = unitKwh * usesW;
+      } else { // mode === 'per_hour'
+        const hoursW = parseLocaleNumber(this.inHoursPerWeek.value);
+        const watt = W; // Input is treated as Watt
+        unitKwh = watt / 1000; // kWh for one hour
+        weekKwh = (watt * hoursW) / 1000;
+      }
+
       const unitKr   = unitKwh * price;
-
-      const weekKwh  = (W * weekHours) / 1000;
       const weekKr   = weekKwh * price;
-
       const dayKwh   = weekKwh / 7;
       const dayKr    = weekKr / 7;
-
       const monthKwh = weekKwh * 4.345;
       const monthKr  = weekKr  * 4.345;
-
       const yearKwh  = weekKwh * 52;
       const yearKr   = weekKr  * 52;
 
