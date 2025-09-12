@@ -58,13 +58,20 @@
       wrapper.innerHTML = `
         <div class="elven-kwh-card" role="group" aria-label="Elven kWh calculator">
           <div class="elven-kwh-grid">
-            <label class="elven-kwh-field">
+            
+            <div class="elven-kwh-field elven-kwh-field-switch">
               <span>Vil du beregne forbrug pr. gang eller pr. time?</span>
-              <select class="elven-mode" aria-label="Beregningstype">
-                <option value="per_use">Pr. gang</option>
-                <option value="per_hour">Pr. time</option>
-              </select>
-            </label>
+              <div class="elven-mode-switch" role="radiogroup" aria-label="Beregningstype">
+                <label>
+                  <input type="radio" name="mode-${this.root.id}" value="per_use" checked>
+                  <span>Pr. gang</span>
+                </label>
+                <label>
+                  <input type="radio" name="mode-${this.root.id}" value="per_hour">
+                  <span>Pr. time</span>
+                </label>
+              </div>
+            </div>
 
             <label class="elven-kwh-field elven-field-per-use">
               <span>Varighed pr. gang (minutter)</span>
@@ -124,7 +131,7 @@
       this.root.appendChild(wrapper);
 
       // Refs
-      this.selMode   = wrapper.querySelector('.elven-mode');
+      this.modeRadios  = wrapper.querySelectorAll('.elven-mode-switch input[type="radio"]');
       this.fPerUse   = wrapper.querySelectorAll('.elven-field-per-use');
       this.fPerHour  = wrapper.querySelector('.elven-field-per-hour');
 
@@ -161,12 +168,14 @@
 
     bind(){
       const onInput = () => this.update();
-      [this.selMode, this.inDurationMin, this.inUsesPerWeek, this.inHoursPerWeek, this.inWatt, this.inPrice]
+      this.modeRadios.forEach(radio => radio.addEventListener('change', onInput));
+      
+      [this.inDurationMin, this.inUsesPerWeek, this.inHoursPerWeek, this.inWatt, this.inPrice]
         .forEach(el => el.addEventListener('input', onInput));
     }
 
     update(){
-      const mode = this.selMode.value;
+      const mode = this.root.querySelector('.elven-mode-switch input:checked').value;
 
       // Toggle visibility
       this.fPerUse.forEach(el => el.classList.toggle('elven-hidden', mode !== 'per_use'));
@@ -203,15 +212,15 @@
       const yearKwh  = weekKwh * 52;
       const yearKr   = weekKr  * 52;
 
-      this.rUnitKwh.textContent  = isFinite(unitKwh)  ? formatDK(unitKwh, 3) : '-';
+      this.rUnitKwh.textContent  = isFinite(unitKwh)  ? formatDK(unitKwh, 2) : '-';
       this.rUnitKr.textContent   = isFinite(unitKr)   ? formatDK(unitKr, 2)  : '-';
-      this.rDayKwh.textContent   = isFinite(dayKwh)   ? formatDK(dayKwh, 3)  : '-';
+      this.rDayKwh.textContent   = isFinite(dayKwh)   ? formatDK(dayKwh, 2)  : '-';
       this.rDayKr.textContent    = isFinite(dayKr)    ? formatDK(dayKr, 2)   : '-';
-      this.rWeekKwh.textContent  = isFinite(weekKwh)  ? formatDK(weekKwh, 3) : '-';
+      this.rWeekKwh.textContent  = isFinite(weekKwh)  ? formatDK(weekKwh, 2) : '-';
       this.rWeekKr.textContent   = isFinite(weekKr)   ? formatDK(weekKr, 2)  : '-';
-      this.rMonthKwh.textContent = isFinite(monthKwh) ? formatDK(monthKwh, 3): '-';
+      this.rMonthKwh.textContent = isFinite(monthKwh) ? formatDK(monthKwh, 2): '-';
       this.rMonthKr.textContent  = isFinite(monthKr)  ? formatDK(monthKr, 2) : '-';
-      this.rYearKwh.textContent  = isFinite(yearKwh)  ? formatDK(yearKwh, 3) : '-';
+      this.rYearKwh.textContent  = isFinite(yearKwh)  ? formatDK(yearKwh, 2) : '-';
       this.rYearKr.textContent   = isFinite(yearKr)   ? formatDK(yearKr, 2)  : '-';
     }
   }
