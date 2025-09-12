@@ -84,13 +84,18 @@
             </label>
 
             <label class="elven-kwh-field elven-field-per-hour">
-              <span>Antal timer pr. uge</span>
-              <input type="text" inputmode="decimal" class="elven-hours-per-week" placeholder="fx 10" aria-label="Timer pr. uge">
+              <span>Antal timer pr. dag</span>
+              <input type="text" inputmode="decimal" class="elven-hours-per-day" placeholder="fx 2" aria-label="Timer pr. dag">
             </label>
 
             <label class="elven-kwh-field elven-watt-label">
-              <span>Apparatets effekt (Watt)</span>
-              <input type="text" inputmode="decimal" class="elven-watt" placeholder="fx 2000" aria-label="Effekt eller forbrug">
+              <span>Apparatets forbrug (kWh pr. gang)</span>
+              <input type="text" inputmode="decimal" class="elven-watt" placeholder="fx 0,75" aria-label="Forbrug i kWh pr. gang">
+            </label>
+            
+            <label class="elven-kwh-field">
+              <span>Antal apparater</span>
+              <input type="text" inputmode="numeric" class="elven-devices" value="1" aria-label="Antal apparater">
             </label>
 
             <label class="elven-kwh-field">
@@ -107,7 +112,7 @@
                 <div role="cell"><span class="r-unit-kwh">-</span> kWh · <span class="r-unit-kr">-</span> kr.</div>
               </div>
               <div class="elven-row" role="row">
-                <div role="cell">Pr. dag (est.)</div>
+                <div role="cell">Pr. dag</div>
                 <div role="cell"><span class="r-day-kwh">-</span> kWh · <span class="r-day-kr">-</span> kr.</div>
               </div>
               <div class="elven-row" role="row">
@@ -115,15 +120,14 @@
                 <div role="cell"><span class="r-week-kwh">-</span> kWh · <span class="r-week-kr">-</span> kr.</div>
               </div>
               <div class="elven-row" role="row">
-                <div role="cell">Pr. måned (est.)</div>
+                <div role="cell">Pr. måned</div>
                 <div role="cell"><span class="r-month-kwh">-</span> kWh · <span class="r-month-kr">-</span> kr.</div>
               </div>
               <div class="elven-row" role="row">
-                <div role="cell">Pr. år (est.)</div>
+                <div role="cell">Pr. år</div>
                 <div role="cell"><span class="r-year-kwh">-</span> kWh · <span class="r-year-kr">-</span> kr.</div>
               </div>
             </div>
-            <p class="elven-note">Bemærk: Måned ≈ 4,345 uger, år = 52 uger.</p>
           </div>
         </div>
       `;
@@ -139,8 +143,9 @@
 
       this.inDurationMin   = wrapper.querySelector('.elven-duration-min');
       this.inUsesPerWeek   = wrapper.querySelector('.elven-uses-per-week');
-      this.inHoursPerWeek  = wrapper.querySelector('.elven-hours-per-week');
+      this.inHoursPerDay  = wrapper.querySelector('.elven-hours-per-day');
       this.inWatt          = wrapper.querySelector('.elven-watt');
+      this.inDevices       = wrapper.querySelector('.elven-devices');
       this.inPrice         = wrapper.querySelector('.elven-price');
 
       this.rUnitKwh  = wrapper.querySelector('.r-unit-kwh');
@@ -162,17 +167,17 @@
 
       // Helpful initial values if nothing set
       if (!this.inPrice.value) this.inPrice.value = '2,50';
-      if (!this.inWatt.value)  this.inWatt.value  = '1000'; // Changed default to reflect Wh
+      if (!this.inWatt.value)  this.inWatt.value  = '0,75';
       this.inDurationMin.value = '90';
       this.inUsesPerWeek.value = '5';
-      this.inHoursPerWeek.value = '10';
+      this.inHoursPerDay.value = '2';
     }
 
     bind(){
       const onInput = () => this.update();
       this.modeRadios.forEach(radio => radio.addEventListener('change', onInput));
       
-      [this.inDurationMin, this.inUsesPerWeek, this.inHoursPerWeek, this.inWatt, this.inPrice]
+      [this.inDurationMin, this.inUsesPerWeek, this.inHoursPerDay, this.inWatt, this.inDevices, this.inPrice]
         .forEach(el => el.addEventListener('input', onInput));
     }
 
@@ -184,51 +189,57 @@
       this.fPerUse.forEach(el => el.classList.toggle('elven-hidden', !isPerUseMode));
       this.fPerHour.classList.toggle('elven-hidden', isPerUseMode);
       
-      // Handle special visibility and labels for "per use" mode
+      // Handle special visibility and labels
       if (isPerUseMode) {
         this.fieldDuration.classList.add('elven-hidden');
-        this.labelWatt.textContent = 'Apparatets forbrug (Wh pr. gang)';
+        this.labelWatt.textContent = 'Apparatets forbrug (kWh pr. gang)';
+        this.inWatt.setAttribute('aria-label', 'Forbrug i kWh pr. gang');
+        this.inWatt.placeholder = 'fx 0,75';
       } else {
         this.labelWatt.textContent = 'Apparatets effekt (Watt)';
+        this.inWatt.setAttribute('aria-label', 'Effekt i Watt');
+        this.inWatt.placeholder = 'fx 1000';
       }
 
       // Read inputs
-      const W     = parseLocaleNumber(this.inWatt.value); // Can be Watt or Wh
-      const price = parseLocaleNumber(this.inPrice.value);
+      const W       = parseLocaleNumber(this.inWatt.value); // Can be Watt or kWh
+      const devices = parseLocaleNumber(this.inDevices.value) || 1;
+      const price   = parseLocaleNumber(this.inPrice.value);
 
-      let unitKwh, weekKwh;
+      let unitKwh, totalWeekKwh;
 
       if (isPerUseMode){
         const usesW   = parseLocaleNumber(this.inUsesPerWeek.value);
-        const whPerUse = W; // Input is now treated as Watt-hours
-        unitKwh = whPerUse / 1000;
-        weekKwh = unitKwh * usesW;
+        unitKwh = W; // kWh for a single use of a single device
+        totalWeekKwh = unitKwh * usesW * devices;
       } else { // mode === 'per_hour'
-        const hoursW = parseLocaleNumber(this.inHoursPerWeek.value);
-        const watt = W; // Input is treated as Watt
-        unitKwh = watt / 1000; // kWh for one hour
-        weekKwh = (watt * hoursW) / 1000;
+        const hoursD = parseLocaleNumber(this.inHoursPerDay.value);
+        const watt = W;
+        unitKwh = watt / 1000; // kWh for one hour for a single device
+        totalWeekKwh = (watt * hoursD * 7 * devices) / 1000;
       }
 
+      // --- Calculations based on total weekly consumption ---
       const unitKr   = unitKwh * price;
-      const weekKr   = weekKwh * price;
-      const dayKwh   = weekKwh / 7;
-      const dayKr    = weekKr / 7;
-      const monthKwh = weekKwh * 4.345;
-      const monthKr  = weekKr  * 4.345;
-      const yearKwh  = weekKwh * 52;
-      const yearKr   = weekKr  * 52;
-
+      const totalDayKwh   = totalWeekKwh / 7;
+      const totalDayKr    = totalDayKwh * price;
+      const totalWeekKr   = totalWeekKwh * price;
+      const totalMonthKwh = totalDayKwh * (365 / 12);
+      const totalMonthKr  = totalDayKr * (365 / 12);
+      const totalYearKwh  = totalDayKwh * 365;
+      const totalYearKr   = totalDayKr * 365;
+      
+      // Display results
       this.rUnitKwh.textContent  = isFinite(unitKwh)  ? formatDK(unitKwh, 2) : '-';
       this.rUnitKr.textContent   = isFinite(unitKr)   ? formatDK(unitKr, 2)  : '-';
-      this.rDayKwh.textContent   = isFinite(dayKwh)   ? formatDK(dayKwh, 2)  : '-';
-      this.rDayKr.textContent    = isFinite(dayKr)    ? formatDK(dayKr, 2)   : '-';
-      this.rWeekKwh.textContent  = isFinite(weekKwh)  ? formatDK(weekKwh, 2) : '-';
-      this.rWeekKr.textContent   = isFinite(weekKr)   ? formatDK(weekKr, 2)  : '-';
-      this.rMonthKwh.textContent = isFinite(monthKwh) ? formatDK(monthKwh, 2): '-';
-      this.rMonthKr.textContent  = isFinite(monthKr)  ? formatDK(monthKr, 2) : '-';
-      this.rYearKwh.textContent  = isFinite(yearKwh)  ? formatDK(yearKwh, 2) : '-';
-      this.rYearKr.textContent   = isFinite(yearKr)   ? formatDK(yearKr, 2)  : '-';
+      this.rDayKwh.textContent   = isFinite(totalDayKwh)   ? formatDK(totalDayKwh, 2)  : '-';
+      this.rDayKr.textContent    = isFinite(totalDayKr)    ? formatDK(totalDayKr, 2)   : '-';
+      this.rWeekKwh.textContent  = isFinite(totalWeekKwh)  ? formatDK(totalWeekKwh, 2) : '-';
+      this.rWeekKr.textContent   = isFinite(totalWeekKr)   ? formatDK(totalWeekKr, 2)  : '-';
+      this.rMonthKwh.textContent = isFinite(totalMonthKwh) ? formatDK(totalMonthKwh, 2): '-';
+      this.rMonthKr.textContent  = isFinite(totalMonthKr)  ? formatDK(totalMonthKr, 2) : '-';
+      this.rYearKwh.textContent  = isFinite(totalYearKwh)  ? formatDK(totalYearKwh, 2) : '-';
+      this.rYearKr.textContent   = isFinite(totalYearKr)   ? formatDK(totalYearKr, 2)  : '-';
     }
   }
 
