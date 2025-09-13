@@ -1,22 +1,21 @@
-
-.elven-kwh-wrap{max-width:760px;margin:1rem auto;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji";color:#000000;}
-.elven-kwh-card{border:1px solid #f0f0f0;border-radius:14px;padding:16px;background:#ffffff;box-shadow:0 1px 2px rgba(0,0,0,.04);}
+.elven-kwh-wrap{margin:1rem auto;color:#000000;}
+.elven-kwh-card{border-radius:10px;padding:16px;background:#ffffff;box-shadow:0 0 15px rgba(0,0,0,.15);}
 .elven-kwh-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;}
 .elven-kwh-field{display:flex;flex-direction:column;gap:6px;}
-.elven-kwh-field span{font-size:.95rem;color:#000000;}
-.elven-kwh-field input,.elven-kwh-field select{padding:10px 12px;border:1px solid #e0e0e0;border-radius:10px;font-size:1rem;background:#f9f9f9;color:#000000;outline:none;}
+.elven-kwh-field span{font-size:.95rem;font-weight:bold;color:#000000;}
+.elven-kwh-field input,.elven-kwh-field select{padding:10px 12px;border:1px solid #cccccc;border-radius:10px;font-size:1rem;background:#f9f9f9;color:#000000;outline:none;}
 .elven-kwh-field input:focus,.elven-kwh-field select:focus{border-color:#2562b6;box-shadow:0 0 0 3px rgba(37,98,182,.15);}
 .elven-kwh-field select{appearance:none;background-image:linear-gradient(45deg, transparent 50%, #2562b6 50%),linear-gradient(135deg, #2562b6 50%, transparent 50%);background-position:calc(100% - 18px) calc(1em + 2px),calc(100% - 13px) calc(1em + 2px);background-size:5px 5px,5px 5px;background-repeat:no-repeat;}
 .elven-kwh-results{margin-top:16px}
 .elven-kwh-results h4{margin:0 0 8px 0;font-size:1.05rem;color:#000000;}
 .elven-kwh-table{display:grid;grid-template-columns:1fr;gap:6px}
-.elven-row{display:flex;justify-content:space-between;align-items:center;background:#fff;border:1px solid #f0f0f0;border-radius:10px;padding:10px 12px}
+.elven-row{display:flex;justify-content:space-between;align-items:center;background:#fff;border:1px solid #cccccc;border-radius:10px;padding:10px 12px}
 .elven-row div:first-child{opacity:.8}
 .elven-note{margin:.5rem 0 0 0;opacity:.7;font-size:.9rem;color:#000000}
 @media (max-width:640px){.elven-kwh-grid{grid-template-columns:1fr}}
 
 .elven-kwh-field-switch {grid-column: 1 / -1;}
-.elven-mode-switch {display:flex;border:1px solid #e0e0e0;border-radius:10px;overflow:hidden;background:#f9f9f9;padding:2px;}
+.elven-mode-switch {display:flex;border:1px solid #cccccc;border-radius:10px;overflow:hidden;background:#f9f9f9;padding:2px;}
 .elven-mode-switch label {flex:1;text-align:center;position:relative;}
 .elven-mode-switch input {position:absolute;opacity:0;width:0;height:0;}
 .elven-mode-switch span {display:block;padding:8px 10px;cursor:pointer;border-radius:8px;font-size:.95rem;transition:background-color .2s ease, color .2s ease;}

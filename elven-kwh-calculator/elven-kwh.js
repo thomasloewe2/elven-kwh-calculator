@@ -109,23 +109,23 @@
             <div class="elven-kwh-table" role="table" aria-label="Resultater">
               <div class="elven-row" role="row">
                 <div role="cell">Pr. enhed (gang/time)</div>
-                <div role="cell"><span class="r-unit-kwh">-</span> kWh · <span class="r-unit-kr">-</span> kr.</div>
+                <div role="cell"><span class="r-unit-kwh">-</span> kWh ⇔ <span class="r-unit-kr">-</span> kr.</div>
               </div>
               <div class="elven-row" role="row">
                 <div role="cell">Pr. dag</div>
-                <div role="cell"><span class="r-day-kwh">-</span> kWh · <span class="r-day-kr">-</span> kr.</div>
+                <div role="cell"><span class="r-day-kwh">-</span> kWh ⇔ <span class="r-day-kr">-</span> kr.</div>
               </div>
               <div class="elven-row" role="row">
                 <div role="cell">Pr. uge</div>
-                <div role="cell"><span class="r-week-kwh">-</span> kWh · <span class="r-week-kr">-</span> kr.</div>
+                <div role="cell"><span class="r-week-kwh">-</span> kWh ⇔ <span class="r-week-kr">-</span> kr.</div>
               </div>
               <div class="elven-row" role="row">
                 <div role="cell">Pr. måned</div>
-                <div role="cell"><span class="r-month-kwh">-</span> kWh · <span class="r-month-kr">-</span> kr.</div>
+                <div role="cell"><span class="r-month-kwh">-</span> kWh ⇔ <span class="r-month-kr">-</span> kr.</div>
               </div>
               <div class="elven-row" role="row">
                 <div role="cell">Pr. år</div>
-                <div role="cell"><span class="r-year-kwh">-</span> kWh · <span class="r-year-kr">-</span> kr.</div>
+                <div role="cell"><span class="r-year-kwh">-</span> kWh ⇔ <span class="r-year-kr">-</span> kr.</div>
               </div>
             </div>
           </div>
