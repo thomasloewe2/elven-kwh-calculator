@@ -1,4 +1,4 @@
-.elven-kwh-wrap{margin:1rem auto;color:#000000;}
+.elven-kwh-wrap{margin:auto;color:#000000;}
 .elven-kwh-card{border-radius:10px;padding:16px;background:#ffffff;box-shadow:0 0 15px rgba(0,0,0,.15);}
 .elven-kwh-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;}
 .elven-kwh-field{display:flex;flex-direction:column;gap:6px;}
