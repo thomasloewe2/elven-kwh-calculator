@@ -60,7 +60,7 @@
           <div class="elven-kwh-grid">
             
             <div class="elven-kwh-field elven-kwh-field-switch">
-              <span>Vil du beregne forbrug pr. gang eller pr. time?</span>
+              <span>Beregn forbrug pr. gang eller pr. time?</span>
               <div class="elven-mode-switch" role="radiogroup" aria-label="Beregningstype">
                 <label>
                   <input type="radio" name="mode-${this.root.id}" value="per_use" checked>
@@ -105,7 +105,7 @@
           </div>
 
           <div class="elven-kwh-results">
-            <h4>Resultat</h4>
+            <p>Resultat</p>
             <div class="elven-kwh-table" role="table" aria-label="Resultater">
               <div class="elven-row" role="row">
                 <div role="cell">Pr. enhed (gang/time)</div>
